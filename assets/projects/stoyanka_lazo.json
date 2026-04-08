@@ -1,0 +1,153 @@
+{
+  "name": "Стоянка Лазо",
+  "description": "192.168.1.x | NVR: admin/ivfrjnby1",
+  "devices": [
+    {
+      "ip": "192.168.1.1",
+      "comment": "Роутер ZC-521G FB-Telecom",
+      "device_type": "Коммутатор",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.2",
+      "comment": "Видеорегистратор ST-NVR-S3208X25 (admin/ivfrjnby1)",
+      "device_type": "NVR",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.16",
+      "comment": "Камера 19",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.101",
+      "comment": "Камера 1",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.102",
+      "comment": "Камера 2",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.103",
+      "comment": "Камера 3",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.104",
+      "comment": "Камера 4",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.105",
+      "comment": "Камера 5",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.106",
+      "comment": "Камера 6",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.107",
+      "comment": "Камера 7",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.108",
+      "comment": "Камера 8",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.109",
+      "comment": "Камера 9",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.110",
+      "comment": "Камера 10",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.111",
+      "comment": "Камера 11",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.112",
+      "comment": "Камера 12",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.113",
+      "comment": "Камера 13",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.114",
+      "comment": "Камера 14",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.115",
+      "comment": "Камера 15",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.116",
+      "comment": "Камера 16",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.117",
+      "comment": "Камера 17",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.118",
+      "comment": "Камера 18",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    }
+  ]
+}

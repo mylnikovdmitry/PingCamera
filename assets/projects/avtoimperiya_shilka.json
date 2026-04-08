@@ -1,0 +1,209 @@
+{
+  "name": "Автоимперия Шилка",
+  "description": "192.168.1.x | Камеры: admin/7bbdh8re* | NVR: admin/imperia_2",
+  "devices": [
+    {
+      "ip": "192.168.1.149",
+      "comment": "NVR ST-NVR-H3208 (admin/imperia_2)",
+      "device_type": "NVR",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.151",
+      "comment": "Камера ST-120, на контейнер и будку подкрылки",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.152",
+      "comment": "Камера ST-725, под крышей в углу на складах (pass 12345)",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.153",
+      "comment": "Камера ST-120M, неизв. логин/пароль",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "yellow"
+    },
+    {
+      "ip": "192.168.1.154",
+      "comment": "Камера ST-725, крыльцо главного входа",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.155",
+      "comment": "Камера ST-725, проход от сторожки на улицу",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.156",
+      "comment": "Камера ST-181, проход со стороны школы",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.157",
+      "comment": "Камера ST-725, проход внутренний двор котельная",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.158",
+      "comment": "Камера imou, офис на столы",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.159",
+      "comment": "Камера ST-110, офис на вход",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.160",
+      "comment": "Камера ST-171, офис витрина",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.161",
+      "comment": "Камера ST-120, склад улица рессоры",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.162",
+      "comment": "Камера ST-110, подвал холл",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.163",
+      "comment": "Камера ST-180, резерв (установить DC разъем)",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "yellow"
+    },
+    {
+      "ip": "192.168.1.164",
+      "comment": "Камера ST-120, на сторожке проход в сторону школы",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.165",
+      "comment": "Камера ST-725, рабочая RJ45-папа",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "yellow"
+    },
+    {
+      "ip": "192.168.1.166",
+      "comment": "Камера ST-181, фасад",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.167",
+      "comment": "Камера ST-S2541, столб около сторожки",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.168",
+      "comment": "Камера ST-S2541, склад (ангар) во внутреннем дворе",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.169",
+      "comment": "Камера ST-S2541, склад 7 ангар",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.170",
+      "comment": "Камера ST-S2541, стоянка со стороны школы Гигант",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.171",
+      "comment": "Камера ST-V-2611, бокс (со звуком)",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.172",
+      "comment": "Камера ST-V-2611, Гигант (со звуком)",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.173",
+      "comment": "Камера ST-V-2611, склад 1 (со звуком)",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.174",
+      "comment": "Камера ST-V-2611, склад 7 (со звуком)",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.175",
+      "comment": "Камера ST-V-2611, подвал стеллажи (со звуком)",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.176",
+      "comment": "Камера ST-V-2611, подвал кухня (со звуком)",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.177",
+      "comment": "Камера ST-V-2611, бухгалтерия (со звуком)",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.178",
+      "comment": "Камера ST-V-2611, въезд во двор (со звуком)",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    }
+  ]
+}

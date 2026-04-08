@@ -1,0 +1,181 @@
+{
+  "name": "Администрация Шилка",
+  "description": "192.168.1.x + 192.168.16.x | NVR: HiWatch DS-N332/2(C)",
+  "devices": [
+    {
+      "ip": "192.168.1.1",
+      "comment": "Маршрутизатор MikroTik L41G-2axD",
+      "device_type": "Коммутатор",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.20",
+      "comment": "Видеорегистратор HiWatch DS-N332/2(C)",
+      "device_type": "NVR",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.5",
+      "comment": "Антенна MikroTik SXT G-5HPacD (основная связь)",
+      "device_type": "Другое",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.250",
+      "comment": "Антенна MikroTik SXT G-5HPacD (здание администрации)",
+      "device_type": "Другое",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.201",
+      "comment": "Антенна MikroTik SXT LGH2 (связь с камерами на площади)",
+      "device_type": "Другое",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.202",
+      "comment": "Антенна MikroTik SXT LGH2 (связь с антенной, парк)",
+      "device_type": "Другое",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.16.10",
+      "comment": "Антенна MikroTik SXT LGH2 (сбер и вкусняшка)",
+      "device_type": "Другое",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.16.11",
+      "comment": "Антенна MikroTik SXT LGH2 (кафе Забайкал)",
+      "device_type": "Другое",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.16.12",
+      "comment": "Антенна MikroTik SXTsq Lite2 (основной столб)",
+      "device_type": "Другое",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.2",
+      "comment": "Камера 11, на локомотив",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.3",
+      "comment": "Камера 4, на сцену КЦ",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.8",
+      "comment": "Камера 7, корабль",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.11",
+      "comment": "Камера 9, площадка",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.19",
+      "comment": "Камера 10, в сторону полиции",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.25",
+      "comment": "Камера 3, в сторону сбера",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.53",
+      "comment": "Камера 8, морякам",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.56",
+      "comment": "Камера 6, прокуратура",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.58",
+      "comment": "Камера 5, на 52ю школу",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.60",
+      "comment": "Камера 1, от вкусняшки на 1000 мелочей",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.63",
+      "comment": "Камера 2, на сбер",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.101",
+      "comment": "Камера 12, на родину мать",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.102",
+      "comment": "Камера 13, парк",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.103",
+      "comment": "Камера 14, парк",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.104",
+      "comment": "Камера 15, парк",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.105",
+      "comment": "Камера 16, парк",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    }
+  ]
+}

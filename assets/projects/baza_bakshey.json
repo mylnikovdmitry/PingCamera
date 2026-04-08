@@ -1,0 +1,90 @@
+{
+  "name": "База Бакшей",
+  "description": "192.168.1.x | NVR: admin/bofy1905",
+  "devices": [
+    {
+      "ip": "192.168.1.100",
+      "comment": "Видеорегистратор (admin/bofy1905)",
+      "device_type": "NVR",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.201",
+      "comment": "Камера 1, Север угол",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.202",
+      "comment": "Камера 2, Восток пилорама",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.203",
+      "comment": "Камера 3, Юг туалет",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.204",
+      "comment": "Камера 4, Запад двор",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.205",
+      "comment": "Камера 5, на боксы влево",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.206",
+      "comment": "Камера 6, на боксы вправо",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.207",
+      "comment": "Камера 7, въезд",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.208",
+      "comment": "Камера 8, въезд двор",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.209",
+      "comment": "Камера 9, Крыша дома",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.210",
+      "comment": "Камера 10, Гараж",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.1.211",
+      "comment": "Камера 11, Гараж",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    }
+  ]
+}

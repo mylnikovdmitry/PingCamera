@@ -1,0 +1,146 @@
+{
+  "name": "Дом",
+  "description": "Пример проекта",
+  "devices": [
+    {
+      "ip": "192.168.0.1",
+      "comment": "Роутер/шлюз",
+      "device_type": "Другое",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.0.83",
+      "comment": "Комп",
+      "device_type": "Другое",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.0.118",
+      "comment": "Телефон",
+      "device_type": "Другое",
+      "sound_alert": true,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.0.148",
+      "comment": "Телефон тб",
+      "device_type": "Другое",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.0.192",
+      "comment": "Камера Дом",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "8.8.8.8",
+      "comment": "Гугл",
+      "device_type": "Другое",
+      "sound_alert": false,
+      "mark": "green"
+    },
+    {
+      "ip": "192.168.1.255",
+      "comment": "оывна",
+      "device_type": "Другое",
+      "sound_alert": false,
+      "mark": "yellow"
+    },
+    {
+      "ip": "192.168.0.80",
+      "comment": "КАА",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.0.81",
+      "comment": "КАА",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.0.82",
+      "comment": "КАА",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.0.84",
+      "comment": "КАА",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.0.85",
+      "comment": "КАА",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.0.86",
+      "comment": "КАА",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.0.87",
+      "comment": "КАА",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.168.0.88",
+      "comment": "КАА",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.5.55.44",
+      "comment": "вап",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.5.55.45",
+      "comment": "вап",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.5.55.46",
+      "comment": "вап",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.5.55.47",
+      "comment": "вап",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    },
+    {
+      "ip": "192.5.55.48",
+      "comment": "вап",
+      "device_type": "Камера",
+      "sound_alert": false,
+      "mark": "none"
+    }
+  ]
+}
