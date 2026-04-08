@@ -365,11 +365,9 @@ def main(page: ft.Page):
     page.padding    = 0
     page.bgcolor    = APP_BG
 
-    # ── определение ориентации ────────────────
     def is_landscape() -> bool:
         return page.width > page.height
 
-    # ── состояние ─────────────────────────────
     state = {
         "project":    Project(),
         "pinging":    False,
@@ -377,6 +375,7 @@ def main(page: ft.Page):
         "timer_sec":  0,
         "sort_col":   SORT_NONE,
         "sort_asc":   True,
+        "tab":        0,
     }
 
     def proj() -> Project:
@@ -481,8 +480,8 @@ def main(page: ft.Page):
         sc  = STATUS_COLORS.get(
             device.status, ft.colors.GREY_500)
         landscape = is_landscape()
-
-        stx = (STATUS_TEXT_LONG.get(device.status, "—")
+        stx = (STATUS_TEXT_LONG.get(
+                   device.status, "—")
                if landscape
                else STATUS_TEXT_SHORT.get(
                    device.status, "—"))
@@ -517,7 +516,6 @@ def main(page: ft.Page):
 
         real_idx = proj().devices.index(device)
 
-        # ── кнопки (общие) ──
         col_btns = ft.Row([
             ft.IconButton(
                 icon=ft.icons.REFRESH,
@@ -549,7 +547,7 @@ def main(page: ft.Page):
         ], spacing=0, tight=True)
 
         if landscape:
-            # ══ ГОРИЗОНТАЛЬНЫЙ РЕЖИМ ══
+            # ══ ГОРИЗОНТАЛЬ ══
             # IP | Комментарий | Статус | Пинг | Кнопки
             row_content = ft.Row([
                 mark_bar,
@@ -585,14 +583,15 @@ def main(page: ft.Page):
                             no_wrap=True,
                         ),
                         ft.Text(
-                            device.last_check or "",
+                            device.last_check
+                            or "",
                             size=9,
                             color=
                             ft.colors.GREY_600,
                             no_wrap=True,
                         ),
                     ], spacing=0),
-                    width=90,
+                    width=95,
                 ),
                 ft.Container(
                     content=ft.Text(
@@ -607,12 +606,12 @@ def main(page: ft.Page):
             ], spacing=4,
                vertical_alignment=
                ft.CrossAxisAlignment.CENTER)
-            row_height = 46
+            row_height = 44
 
         else:
-            # ══ ВЕРТИКАЛЬНЫЙ РЕЖИМ ══
+            # ══ ВЕРТИКАЛЬ ══
             # Строка 1: IP | Статус | Пинг | Кнопки
-            # Строка 2: Комментарий (серый)
+            # Строка 2: Комментарий серым курсивом
             row_content = ft.Column([
                 ft.Row([
                     mark_bar,
@@ -664,11 +663,11 @@ def main(page: ft.Page):
                         ft.TextOverflow.ELLIPSIS,
                         italic=True,
                     ),
-                ]) if device.comment else ft.Container(
-                    height=2),
+                ]) if device.comment
+                else ft.Container(height=2),
             ], spacing=0)
             row_height = (
-                58 if device.comment else 44)
+                56 if device.comment else 42)
 
         return ft.Container(
             content=row_content,
@@ -783,6 +782,20 @@ def main(page: ft.Page):
 
     def rebuild_col_header():
         landscape = is_landscape()
+        reset_btn = ft.Container(
+            content=ft.IconButton(
+                icon=ft.icons.SORT,
+                icon_color=(
+                    ft.colors.CYAN_400
+                    if state["sort_col"]
+                    else ft.colors.GREY_700),
+                icon_size=14,
+                tooltip="Сбросить сортировку",
+                on_click=lambda e: reset_sort(),
+                padding=ft.padding.all(0),
+            ),
+            width=90,
+        )
         if landscape:
             col_header_row.controls = [
                 ft.Container(width=4),
@@ -792,54 +805,23 @@ def main(page: ft.Page):
                          SORT_COMMENT,
                          expand=True),
                 _hdr_btn("Статус",
-                         SORT_STATUS, width=90),
+                         SORT_STATUS, width=95),
                 _hdr_btn("Пинг",
                          SORT_PING, width=55),
-                ft.Container(
-                    content=ft.IconButton(
-                        icon=ft.icons.SORT,
-                        icon_color=(
-                            ft.colors.CYAN_400
-                            if state["sort_col"]
-                            else
-                            ft.colors.GREY_700),
-                        icon_size=14,
-                        tooltip="Сбросить",
-                        on_click=lambda e:
-                            reset_sort(),
-                        padding=
-                        ft.padding.all(0),
-                    ),
-                    width=100,
-                ),
+                reset_btn,
             ]
         else:
             col_header_row.controls = [
                 ft.Container(width=4),
-                _hdr_btn("IP адрес  /  Комментарий",
-                         SORT_IP, width=140),
+                _hdr_btn(
+                    "IP  /  Комментарий",
+                    SORT_IP, width=140),
                 ft.Container(expand=True),
                 _hdr_btn("Статус",
                          SORT_STATUS, width=62),
                 _hdr_btn("Пинг",
                          SORT_PING, width=46),
-                ft.Container(
-                    content=ft.IconButton(
-                        icon=ft.icons.SORT,
-                        icon_color=(
-                            ft.colors.CYAN_400
-                            if state["sort_col"]
-                            else
-                            ft.colors.GREY_700),
-                        icon_size=14,
-                        tooltip="Сбросить",
-                        on_click=lambda e:
-                            reset_sort(),
-                        padding=
-                        ft.padding.all(0),
-                    ),
-                    width=100,
-                ),
+                reset_btn,
             ]
         try:
             page.update()
@@ -848,13 +830,6 @@ def main(page: ft.Page):
 
     rebuild_col_header()
 
-    # ── обработчик поворота ───────────────────
-    def on_resize(e):
-        rebuild_col_header()
-        refresh_devices()
-
-    page.on_resize = on_resize
-
     # ── пинг ──────────────────────────────────
     def _ping_one(device: Device):
         def _do():
@@ -862,9 +837,9 @@ def main(page: ft.Page):
             device.ping_ms = None
             refresh_devices()
             ok, ms = smart_ping(device.ip)
-            device.status     = (STATUS_ONLINE
-                                  if ok
-                                  else STATUS_OFFLINE)
+            device.status = (
+                STATUS_ONLINE
+                if ok else STATUS_OFFLINE)
             device.ping_ms    = ms if ok else None
             device.last_check = (
                 datetime.now()
@@ -949,8 +924,8 @@ def main(page: ft.Page):
 
         def _loop():
             remaining = sec
-            while not state["stop_timer"].wait(
-                    timeout=1):
+            while not state[
+                    "stop_timer"].wait(timeout=1):
                 remaining -= 1
                 m, s = divmod(remaining, 60)
                 lbl_timer.value = (
@@ -963,8 +938,7 @@ def main(page: ft.Page):
                     break
                 if remaining <= 0:
                     remaining = sec
-                    lbl_timer.value = (
-                        "⏱ пингую...")
+                    lbl_timer.value = "⏱ пингую..."
                     try:
                         page.update()
                     except Exception:
@@ -1018,8 +992,7 @@ def main(page: ft.Page):
                 icon=ft.icons.SAVE,
                 icon_color=ft.colors.AMBER_400,
                 tooltip="Сохранить",
-                on_click=lambda e:
-                    quick_save(),
+                on_click=lambda e: quick_save(),
             ),
         ], spacing=6),
         padding=ft.padding.symmetric(
@@ -1043,7 +1016,7 @@ def main(page: ft.Page):
             lbl_status.value = f"⚠ {ex}"
             page.update()
 
-    # ── диалог добавить/редактировать ─────────
+    # ── диалог редактирования ─────────────────
     def open_edit_dlg(idx: int):
         is_new = idx < 0
         dev    = (Device("") if is_new
@@ -1135,11 +1108,8 @@ def main(page: ft.Page):
                 else "Редактировать",
                 size=16),
             content=ft.Column([
-                fld_ip,
-                fld_comment,
-                dd_type,
-                dd_mark,
-                lbl_err,
+                fld_ip, fld_comment,
+                dd_type, dd_mark, lbl_err,
             ], spacing=10, tight=True,
                height=360,
                scroll=ft.ScrollMode.AUTO),
@@ -1195,7 +1165,7 @@ def main(page: ft.Page):
         dlg.open    = True
         page.update()
 
-    # ── вкладка ПРОЕКТЫ ───────────────────────
+    # ── проекты ───────────────────────────────
     projects_list = ft.ListView(
         expand=True, spacing=2,
         padding=ft.padding.all(6),
@@ -1204,9 +1174,7 @@ def main(page: ft.Page):
     def refresh_projects():
         projects_list.controls.clear()
         files = list_project_files()
-        lbl_status.value = (
-            f"Файлов: {len(files)}")
-
+        lbl_status.value = f"Файлов: {len(files)}"
         if not files:
             projects_list.controls.append(
                 ft.Container(
@@ -1214,15 +1182,14 @@ def main(page: ft.Page):
                         ft.Icon(
                             ft.icons.FOLDER_OPEN,
                             size=48,
-                            color=ft.colors.GREY_800,
-                        ),
+                            color=
+                            ft.colors.GREY_800),
                         ft.Text(
                             "Нет сохранённых проектов",
                             color=ft.colors.GREY_700,
                             size=14,
                             text_align=
-                            ft.TextAlign.CENTER,
-                        ),
+                            ft.TextAlign.CENTER),
                     ], horizontal_alignment=
                     ft.CrossAxisAlignment.CENTER,
                     spacing=10),
@@ -1254,17 +1221,17 @@ def main(page: ft.Page):
                                 path)
                             state["project"] = p
                             lbl_proj.value   = p.name
-                            state["sort_col"] = (
-                                SORT_NONE)
+                            state["sort_col"] = \
+                                SORT_NONE
                             state["sort_asc"] = True
                             _stop_timer()
                             dd_timer.value   = None
                             rebuild_col_header()
                             refresh_devices()
-                            _switch_tab(0)
+                            state["tab"] = 0
+                            rebuild_layout()
                             lbl_status.value = (
-                                f"✓ Открыт:"
-                                f" {p.name}")
+                                f"✓ Открыт: {p.name}")
                             page.update()
                         except Exception as ex:
                             lbl_status.value = (
@@ -1287,12 +1254,10 @@ def main(page: ft.Page):
                             ft.icons.FOLDER,
                             color=
                             ft.colors.AMBER_400,
-                            size=26,
-                        ),
+                            size=26),
                         ft.Column([
                             ft.Text(
-                                pname,
-                                size=13,
+                                pname, size=13,
                                 color=
                                 ft.colors.WHITE,
                                 weight=
@@ -1300,38 +1265,33 @@ def main(page: ft.Page):
                                 no_wrap=True,
                                 overflow=
                                 ft.TextOverflow
-                                .ELLIPSIS,
-                            ),
+                                .ELLIPSIS),
                             ft.Text(
                                 (f"{pdesc}  •  "
-                                 if pdesc
-                                 else "") +
-                                f"{ndev} устройств",
+                                 if pdesc else "")
+                                + f"{ndev} устройств",
                                 size=11,
                                 color=
                                 ft.colors.GREY_500,
                                 no_wrap=True,
                                 overflow=
                                 ft.TextOverflow
-                                .ELLIPSIS,
-                            ),
+                                .ELLIPSIS),
                         ], spacing=2, expand=True),
                         ft.IconButton(
-                            icon=
-                            ft.icons.OPEN_IN_NEW,
+                            icon=ft.icons
+                            .OPEN_IN_NEW,
                             icon_color=
                             ft.colors.BLUE_300,
                             tooltip="Открыть",
-                            on_click=_load(),
-                        ),
+                            on_click=_load()),
                         ft.IconButton(
-                            icon=
-                            ft.icons.DELETE_OUTLINE,
+                            icon=ft.icons
+                            .DELETE_OUTLINE,
                             icon_color=
                             ft.colors.RED_300,
                             tooltip="Удалить",
-                            on_click=_del(),
-                        ),
+                            on_click=_del()),
                     ], spacing=6,
                        vertical_alignment=
                        ft.CrossAxisAlignment.CENTER),
@@ -1364,15 +1324,13 @@ def main(page: ft.Page):
             border_color=ft.colors.BLUE_400,
         )
         lbl_err = ft.Text(
-            "", color=ft.colors.RED_400,
-            size=12)
+            "", color=ft.colors.RED_400, size=12)
 
         def on_save(e):
             name  = fld_name.value.strip()
             fname = fld_file.value.strip()
             if not fname:
-                lbl_err.value = (
-                    "Введите имя файла")
+                lbl_err.value = "Введите имя файла"
                 page.update()
                 return
             if not fname.endswith(".json"):
@@ -1401,8 +1359,7 @@ def main(page: ft.Page):
                 "Сохранить проект", size=16),
             content=ft.Column([
                 fld_name, fld_file, lbl_err,
-            ], spacing=10, tight=True,
-               height=200),
+            ], spacing=10, tight=True, height=200),
             actions=[
                 ft.TextButton(
                     "Отмена",
@@ -1437,10 +1394,11 @@ def main(page: ft.Page):
             state["sort_col"] = SORT_NONE
             state["sort_asc"] = True
             _stop_timer()
-            dd_timer.value   = None
+            dd_timer.value = None
             rebuild_col_header()
             refresh_devices()
-            _switch_tab(0)
+            state["tab"] = 0
+            rebuild_layout()
             dlg.open = False
             page.update()
 
@@ -1454,8 +1412,7 @@ def main(page: ft.Page):
                 "Новый проект", size=16),
             content=ft.Column([
                 fld_name,
-            ], spacing=10, tight=True,
-               height=80),
+            ], spacing=10, tight=True, height=80),
             actions=[
                 ft.TextButton(
                     "Отмена",
@@ -1472,41 +1429,43 @@ def main(page: ft.Page):
         dlg.open    = True
         page.update()
 
-    # ── вкладка проектов UI ───────────────────
+    # ── вкладки ───────────────────────────────
+    devices_view = ft.Column([
+        toolbar,
+        col_header_container,
+        device_list,
+    ], spacing=0, expand=True)
+
     projects_tab = ft.Column([
         ft.Container(
             content=ft.Row([
                 ft.Text(
-                    "Проекты",
-                    size=16,
+                    "Проекты", size=16,
                     weight=ft.FontWeight.BOLD,
                     color=ft.colors.WHITE,
-                    expand=True,
-                ),
+                    expand=True),
                 ft.IconButton(
-                    icon=
-                    ft.icons.CREATE_NEW_FOLDER,
+                    icon=ft.icons
+                    .CREATE_NEW_FOLDER,
                     icon_color=
                     ft.colors.GREEN_400,
                     tooltip="Новый проект",
                     on_click=lambda e:
-                        open_new_dlg(),
-                ),
+                        open_new_dlg()),
                 ft.IconButton(
                     icon=ft.icons.SAVE,
                     icon_color=
                     ft.colors.AMBER_400,
                     tooltip="Сохранить текущий",
                     on_click=lambda e:
-                        open_save_dlg(),
-                ),
+                        open_save_dlg()),
                 ft.IconButton(
                     icon=ft.icons.REFRESH,
-                    icon_color=ft.colors.BLUE_400,
+                    icon_color=
+                    ft.colors.BLUE_400,
                     tooltip="Обновить",
                     on_click=lambda e:
-                        refresh_projects(),
-                ),
+                        refresh_projects()),
             ]),
             padding=ft.padding.symmetric(
                 horizontal=10, vertical=6),
@@ -1519,26 +1478,6 @@ def main(page: ft.Page):
     ], spacing=0, expand=True)
 
     # ── навигация ─────────────────────────────
-    content_area = ft.Container(expand=True)
-
-    devices_view = ft.Column([
-        toolbar,
-        col_header_container,
-        device_list,
-    ], spacing=0, expand=True)
-
-    def _switch_tab(idx: int):
-        nav.selected_index = idx
-        if idx == 0:
-            content_area.content = devices_view
-        elif idx == 1:
-            refresh_projects()
-            content_area.content = projects_tab
-        try:
-            page.update()
-        except Exception:
-            pass
-
     nav = ft.NavigationBar(
         selected_index=0,
         bgcolor=HEADER_BG,
@@ -1559,27 +1498,34 @@ def main(page: ft.Page):
             e.control.selected_index),
     )
 
+    # ── в горизонтали — кнопка Проекты в шапке
+    btn_projects_landscape = ft.IconButton(
+        icon=ft.icons.FOLDER_OUTLINED,
+        selected_icon=ft.icons.FOLDER,
+        icon_color=ft.colors.BLUE_300,
+        tooltip="Проекты",
+        on_click=lambda e: _switch_tab(
+            1 if state["tab"] == 0 else 0),
+    )
+
     # ── шапка ─────────────────────────────────
-    header = ft.Container(
+    header_portrait = ft.Container(
         content=ft.Column([
             ft.Row([
                 ft.Icon(
                     ft.icons.WIFI_TETHERING,
                     color=ft.colors.BLUE_300,
-                    size=18,
-                ),
+                    size=18),
                 ft.Text(
                     "Ping Camera",
                     size=15,
                     weight=ft.FontWeight.BOLD,
-                    color=ft.colors.CYAN_200,
-                ),
+                    color=ft.colors.CYAN_200),
                 ft.Container(expand=True),
                 lbl_proj,
             ], spacing=6),
             ft.Row([
-                lbl_online,
-                lbl_offline,
+                lbl_online, lbl_offline,
                 lbl_total,
             ], spacing=10),
         ], spacing=2),
@@ -1587,8 +1533,34 @@ def main(page: ft.Page):
         padding=ft.padding.symmetric(
             horizontal=10, vertical=5),
         border=ft.border.only(
-            bottom=ft.BorderSide(
-                1, "#2a2a3a")),
+            bottom=ft.BorderSide(1, "#2a2a3a")),
+    )
+
+    header_landscape = ft.Container(
+        content=ft.Row([
+            ft.Icon(
+                ft.icons.WIFI_TETHERING,
+                color=ft.colors.BLUE_300,
+                size=16),
+            ft.Text(
+                "Ping Camera",
+                size=13,
+                weight=ft.FontWeight.BOLD,
+                color=ft.colors.CYAN_200),
+            ft.Container(width=8),
+            lbl_online,
+            lbl_offline,
+            lbl_total,
+            ft.Container(expand=True),
+            lbl_proj,
+            ft.Container(width=4),
+            btn_projects_landscape,
+        ], spacing=6),
+        bgcolor=HEADER_BG,
+        padding=ft.padding.symmetric(
+            horizontal=8, vertical=4),
+        border=ft.border.only(
+            bottom=ft.BorderSide(1, "#2a2a3a")),
     )
 
     status_bar = ft.Container(
@@ -1600,13 +1572,64 @@ def main(page: ft.Page):
             top=ft.BorderSide(1, "#2a2a3a")),
     )
 
-    page.add(ft.Column([
-        header,
-        content_area,
-        status_bar,
-        nav,
-    ], spacing=0, expand=True))
+    content_area = ft.Container(expand=True)
 
+    # ── переключение вкладок ──────────────────
+    def _switch_tab(idx: int):
+        state["tab"] = idx
+        nav.selected_index = idx
+        if idx == 0:
+            content_area.content = devices_view
+        else:
+            refresh_projects()
+            content_area.content = projects_tab
+        try:
+            page.update()
+        except Exception:
+            pass
+
+    # ── перестройка layout ────────────────────
+    def rebuild_layout():
+        page.controls.clear()
+        tab = state["tab"]
+        if is_landscape():
+            # Горизонталь — без нижней панели
+            if tab == 0:
+                content_area.content = devices_view
+            else:
+                content_area.content = projects_tab
+            page.add(ft.Column([
+                header_landscape,
+                content_area,
+                status_bar,
+            ], spacing=0, expand=True))
+        else:
+            # Вертикаль — с нижней панелью
+            if tab == 0:
+                content_area.content = devices_view
+            else:
+                content_area.content = projects_tab
+            page.add(ft.Column([
+                header_portrait,
+                content_area,
+                status_bar,
+                nav,
+            ], spacing=0, expand=True))
+        try:
+            page.update()
+        except Exception:
+            pass
+
+    # ── обработчик поворота ───────────────────
+    def on_resize(e):
+        rebuild_layout()
+        rebuild_col_header()
+        refresh_devices()
+
+    page.on_resize = on_resize
+
+    # ── старт ─────────────────────────────────
+    rebuild_layout()
     _switch_tab(0)
     refresh_devices()
 
