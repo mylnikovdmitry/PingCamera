@@ -1,6 +1,7 @@
 import flet as ft
 import json
 import os
+import shutil
 import socket
 import threading
 import time
@@ -353,6 +354,62 @@ def safe_filename(name: str) -> str:
             .replace(" ", "_") or "project")
 
 
+def import_project_file(
+        src_path: str,
+        dst_dir:  str) -> tuple:
+    """
+    Копирует JSON файл в папку проектов.
+    Возвращает (ok, message, project_name)
+    """
+    try:
+        fname = os.path.basename(src_path)
+        if not fname.endswith(".json"):
+            fname += ".json"
+
+        # Читаем и проверяем файл
+        with open(src_path, "r",
+                  encoding="utf-8") as f:
+            data = json.load(f)
+
+        # Проверяем что это наш формат
+        if "devices" not in data:
+            return (False,
+                    "Файл не является проектом "
+                    "Ping Camera", "")
+
+        pname = data.get("name", fname)
+        ndev  = len(data.get("devices", []))
+
+        # Копируем в папку проектов
+        dst_path = os.path.join(dst_dir, fname)
+
+        # Если файл уже есть — добавляем суффикс
+        if os.path.exists(dst_path):
+            base = fname[:-5]
+            dst_path = os.path.join(
+                dst_dir, f"{base}_imported.json")
+
+        with open(src_path, "r",
+                  encoding="utf-8") as f:
+            content = f.read()
+        with open(dst_path, "w",
+                  encoding="utf-8") as f:
+            f.write(content)
+
+        return (True,
+                f"✓ Импортирован: {pname} "
+                f"({ndev} устройств)",
+                pname)
+
+    except json.JSONDecodeError:
+        return (False,
+                "Ошибка: файл повреждён "
+                "или не является JSON", "")
+    except Exception as ex:
+        return (False,
+                f"Ошибка импорта: {ex}", "")
+
+
 # ─────────────────────────────────────────────
 #  ГЛАВНАЯ ФУНКЦИЯ
 # ─────────────────────────────────────────────
@@ -426,6 +483,46 @@ def main(page: ft.Page):
         lbl_online.value  = f"● {online}"
         lbl_offline.value = f"● {offline}"
         lbl_total.value   = f"всего {total}"
+
+    # ── FilePicker для импорта ─────────────────
+    def on_file_picked(e: ft.FilePickerResultEvent):
+        if not e.files:
+            lbl_status.value = "Импорт отменён"
+            page.update()
+            return
+
+        dst_dir = get_projects_dir()
+        imported = 0
+        errors   = 0
+
+        for f in e.files:
+            ok, msg, _ = import_project_file(
+                f.path, dst_dir)
+            if ok:
+                imported += 1
+                lbl_status.value = msg
+            else:
+                errors += 1
+                lbl_status.value = msg
+
+        if imported > 0:
+            lbl_status.value = (
+                f"✓ Импортировано файлов: "
+                f"{imported}")
+            refresh_projects()
+
+        page.update()
+
+    file_picker = ft.FilePicker(
+        on_result=on_file_picked)
+    page.overlay.append(file_picker)
+
+    def open_import():
+        file_picker.pick_files(
+            dialog_title="Выберите JSON проект",
+            allowed_extensions=["json"],
+            allow_multiple=True,
+        )
 
     # ── сортировка ────────────────────────────
     def get_sorted_devices() -> list:
@@ -547,8 +644,6 @@ def main(page: ft.Page):
         ], spacing=0, tight=True)
 
         if landscape:
-            # ══ ГОРИЗОНТАЛЬ ══
-            # IP | Комментарий | Статус | Пинг | Кнопки
             row_content = ft.Row([
                 mark_bar,
                 ft.Container(
@@ -575,16 +670,14 @@ def main(page: ft.Page):
                 ft.Container(
                     content=ft.Column([
                         ft.Text(
-                            stx,
-                            size=12,
+                            stx, size=12,
                             color=sc,
                             weight=
                             ft.FontWeight.BOLD,
                             no_wrap=True,
                         ),
                         ft.Text(
-                            device.last_check
-                            or "",
+                            device.last_check or "",
                             size=9,
                             color=
                             ft.colors.GREY_600,
@@ -595,8 +688,7 @@ def main(page: ft.Page):
                 ),
                 ft.Container(
                     content=ft.Text(
-                        ping_txt,
-                        size=12,
+                        ping_txt, size=12,
                         color=ping_clr,
                         no_wrap=True,
                     ),
@@ -609,9 +701,6 @@ def main(page: ft.Page):
             row_height = 44
 
         else:
-            # ══ ВЕРТИКАЛЬ ══
-            # Строка 1: IP | Статус | Пинг | Кнопки
-            # Строка 2: Комментарий серым курсивом
             row_content = ft.Column([
                 ft.Row([
                     mark_bar,
@@ -630,8 +719,7 @@ def main(page: ft.Page):
                     ft.Container(expand=True),
                     ft.Container(
                         content=ft.Text(
-                            stx,
-                            size=11,
+                            stx, size=11,
                             color=sc,
                             weight=
                             ft.FontWeight.BOLD,
@@ -641,8 +729,7 @@ def main(page: ft.Page):
                     ),
                     ft.Container(
                         content=ft.Text(
-                            ping_txt,
-                            size=11,
+                            ping_txt, size=11,
                             color=ping_clr,
                             no_wrap=True,
                         ),
@@ -1190,6 +1277,13 @@ def main(page: ft.Page):
                             size=14,
                             text_align=
                             ft.TextAlign.CENTER),
+                        ft.Text(
+                            "Нажмите ⬇ Импорт "
+                            "чтобы добавить JSON",
+                            color=ft.colors.GREY_800,
+                            size=12,
+                            text_align=
+                            ft.TextAlign.CENTER),
                     ], horizontal_alignment=
                     ft.CrossAxisAlignment.CENTER,
                     spacing=10),
@@ -1231,7 +1325,8 @@ def main(page: ft.Page):
                             state["tab"] = 0
                             rebuild_layout()
                             lbl_status.value = (
-                                f"✓ Открыт: {p.name}")
+                                f"✓ Открыт:"
+                                f" {p.name}")
                             page.update()
                         except Exception as ex:
                             lbl_status.value = (
@@ -1436,44 +1531,53 @@ def main(page: ft.Page):
         device_list,
     ], spacing=0, expand=True)
 
+    # ── шапка раздела проектов ────────────────
+    projects_header = ft.Container(
+        content=ft.Row([
+            ft.Text(
+                "Проекты", size=16,
+                weight=ft.FontWeight.BOLD,
+                color=ft.colors.WHITE,
+                expand=True),
+            # ── Импорт ──
+            ft.ElevatedButton(
+                text="⬇ Импорт",
+                bgcolor="#1a3a1a",
+                color=ft.colors.GREEN_300,
+                on_click=lambda e: open_import(),
+                style=ft.ButtonStyle(
+                    padding=ft.padding.symmetric(
+                        horizontal=10,
+                        vertical=4),
+                ),
+            ),
+            ft.IconButton(
+                icon=ft.icons.CREATE_NEW_FOLDER,
+                icon_color=ft.colors.GREEN_400,
+                tooltip="Новый проект",
+                on_click=lambda e: open_new_dlg()),
+            ft.IconButton(
+                icon=ft.icons.SAVE,
+                icon_color=ft.colors.AMBER_400,
+                tooltip="Сохранить текущий",
+                on_click=lambda e: open_save_dlg()),
+            ft.IconButton(
+                icon=ft.icons.REFRESH,
+                icon_color=ft.colors.BLUE_400,
+                tooltip="Обновить список",
+                on_click=lambda e:
+                    refresh_projects()),
+        ]),
+        padding=ft.padding.symmetric(
+            horizontal=10, vertical=6),
+        bgcolor=HEADER_BG,
+        border=ft.border.only(
+            bottom=ft.BorderSide(
+                1, "#2a2a3a")),
+    )
+
     projects_tab = ft.Column([
-        ft.Container(
-            content=ft.Row([
-                ft.Text(
-                    "Проекты", size=16,
-                    weight=ft.FontWeight.BOLD,
-                    color=ft.colors.WHITE,
-                    expand=True),
-                ft.IconButton(
-                    icon=ft.icons
-                    .CREATE_NEW_FOLDER,
-                    icon_color=
-                    ft.colors.GREEN_400,
-                    tooltip="Новый проект",
-                    on_click=lambda e:
-                        open_new_dlg()),
-                ft.IconButton(
-                    icon=ft.icons.SAVE,
-                    icon_color=
-                    ft.colors.AMBER_400,
-                    tooltip="Сохранить текущий",
-                    on_click=lambda e:
-                        open_save_dlg()),
-                ft.IconButton(
-                    icon=ft.icons.REFRESH,
-                    icon_color=
-                    ft.colors.BLUE_400,
-                    tooltip="Обновить",
-                    on_click=lambda e:
-                        refresh_projects()),
-            ]),
-            padding=ft.padding.symmetric(
-                horizontal=10, vertical=6),
-            bgcolor=HEADER_BG,
-            border=ft.border.only(
-                bottom=ft.BorderSide(
-                    1, "#2a2a3a")),
-        ),
+        projects_header,
         projects_list,
     ], spacing=0, expand=True)
 
@@ -1498,17 +1602,15 @@ def main(page: ft.Page):
             e.control.selected_index),
     )
 
-    # ── в горизонтали — кнопка Проекты в шапке
     btn_projects_landscape = ft.IconButton(
         icon=ft.icons.FOLDER_OUTLINED,
-        selected_icon=ft.icons.FOLDER,
         icon_color=ft.colors.BLUE_300,
         tooltip="Проекты",
         on_click=lambda e: _switch_tab(
             1 if state["tab"] == 0 else 0),
     )
 
-    # ── шапка ─────────────────────────────────
+    # ── шапки ─────────────────────────────────
     header_portrait = ft.Container(
         content=ft.Column([
             ft.Row([
@@ -1593,7 +1695,6 @@ def main(page: ft.Page):
         page.controls.clear()
         tab = state["tab"]
         if is_landscape():
-            # Горизонталь — без нижней панели
             if tab == 0:
                 content_area.content = devices_view
             else:
@@ -1604,7 +1705,6 @@ def main(page: ft.Page):
                 status_bar,
             ], spacing=0, expand=True))
         else:
-            # Вертикаль — с нижней панелью
             if tab == 0:
                 content_area.content = devices_view
             else:
@@ -1620,7 +1720,6 @@ def main(page: ft.Page):
         except Exception:
             pass
 
-    # ── обработчик поворота ───────────────────
     def on_resize(e):
         rebuild_layout()
         rebuild_col_header()
@@ -1628,7 +1727,6 @@ def main(page: ft.Page):
 
     page.on_resize = on_resize
 
-    # ── старт ─────────────────────────────────
     rebuild_layout()
     _switch_tab(0)
     refresh_devices()
