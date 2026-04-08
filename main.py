@@ -17,10 +17,10 @@ PORTS_TO_CHECK = [
 ]
 SOCKET_TIMEOUT = 0.8
 ASSETS_DIR     = "assets"
-IS_ANDROID     = False
 BASE_DIR       = os.path.dirname(
     os.path.abspath(__file__))
 
+IS_ANDROID = False
 try:
     import android  # noqa
     IS_ANDROID = True
@@ -62,18 +62,17 @@ STATUS_COLORS = {
     STATUS_OFFLINE:  ft.colors.RED_400,
     STATUS_CHECKING: ft.colors.ORANGE_400,
 }
-STATUS_TEXT = {
+STATUS_TEXT_SHORT = {
     STATUS_UNKNOWN:  "—",
     STATUS_ONLINE:   "● ОН",
     STATUS_OFFLINE:  "● ОФФ",
     STATUS_CHECKING: "○...",
 }
-DEVICE_ICONS = {
-    "Камера":     ft.icons.VIDEOCAM,
-    "Компьютер":  ft.icons.COMPUTER,
-    "NVR":        ft.icons.VIDEO_LIBRARY,
-    "Коммутатор": ft.icons.DEVICE_HUB,
-    "Другое":     ft.icons.DEVICES_OTHER,
+STATUS_TEXT_LONG = {
+    STATUS_UNKNOWN:  "—",
+    STATUS_ONLINE:   "● ОНЛАЙН",
+    STATUS_OFFLINE:  "● ОФФЛАЙН",
+    STATUS_CHECKING: "○ Проверка...",
 }
 TIMER_OPTIONS = {
     "Выкл":  0,
@@ -361,13 +360,16 @@ def main(page: ft.Page):
 
     install_bundled_projects()
 
-    page.title         = "Ping Camera Monitor"
-    page.theme_mode    = ft.ThemeMode.DARK
-    page.padding       = 0
-    page.bgcolor       = APP_BG
-    page.window_width  = 420
-    page.window_height = 780
+    page.title      = "Ping Camera Monitor"
+    page.theme_mode = ft.ThemeMode.DARK
+    page.padding    = 0
+    page.bgcolor    = APP_BG
 
+    # ── определение ориентации ────────────────
+    def is_landscape() -> bool:
+        return page.width > page.height
+
+    # ── состояние ─────────────────────────────
     state = {
         "project":    Project(),
         "pinging":    False,
@@ -380,10 +382,10 @@ def main(page: ft.Page):
     def proj() -> Project:
         return state["project"]
 
-    # ── шапка ─────────────────────────────────
+    # ── элементы шапки ────────────────────────
     lbl_proj = ft.Text(
         "Новый проект",
-        size=14,
+        size=13,
         weight=ft.FontWeight.BOLD,
         color=ft.colors.CYAN_200,
         expand=True,
@@ -401,12 +403,16 @@ def main(page: ft.Page):
         color=ft.colors.RED_400,
     )
     lbl_total = ft.Text(
-        "всего 0", size=12,
+        "всего 0", size=11,
         color=ft.colors.GREY_500,
     )
     lbl_status = ft.Text(
         "Готово", size=11,
         color=ft.colors.GREEN_300,
+    )
+    lbl_timer = ft.Text(
+        "", size=11,
+        color=ft.colors.CYAN_400,
     )
 
     def update_stats():
@@ -474,9 +480,14 @@ def main(page: ft.Page):
                   display_idx: int) -> ft.Container:
         sc  = STATUS_COLORS.get(
             device.status, ft.colors.GREY_500)
-        stx = STATUS_TEXT.get(
-            device.status, "—")
-        bg  = MARK_BG.get(device.mark)
+        landscape = is_landscape()
+
+        stx = (STATUS_TEXT_LONG.get(device.status, "—")
+               if landscape
+               else STATUS_TEXT_SHORT.get(
+                   device.status, "—"))
+
+        bg = MARK_BG.get(device.mark)
         if bg is None:
             bg = (ROW_BG_EVEN
                   if display_idx % 2 == 0
@@ -506,62 +517,7 @@ def main(page: ft.Page):
 
         real_idx = proj().devices.index(device)
 
-        # ── IP ──
-        col_ip = ft.Container(
-            content=ft.Text(
-                device.ip,
-                size=12,
-                weight=ft.FontWeight.W_600,
-                color=ft.colors.CYAN_200,
-                no_wrap=True,
-            ),
-            width=108,
-        )
-
-        # ── Комментарий ──
-        col_comment = ft.Container(
-            content=ft.Text(
-                device.comment or "—",
-                size=12,
-                color=ft.colors.WHITE,
-                no_wrap=True,
-                overflow=ft.TextOverflow.ELLIPSIS,
-            ),
-            expand=True,
-        )
-
-        # ── Статус ──
-        col_status = ft.Container(
-            content=ft.Column([
-                ft.Text(
-                    stx,
-                    size=11,
-                    color=sc,
-                    weight=ft.FontWeight.BOLD,
-                    no_wrap=True,
-                ),
-                ft.Text(
-                    device.last_check or "",
-                    size=9,
-                    color=ft.colors.GREY_600,
-                    no_wrap=True,
-                ),
-            ], spacing=0),
-            width=72,
-        )
-
-        # ── Пинг ──
-        col_ping = ft.Container(
-            content=ft.Text(
-                ping_txt,
-                size=11,
-                color=ping_clr,
-                no_wrap=True,
-            ),
-            width=46,
-        )
-
-        # ── Кнопки ──
+        # ── кнопки (общие) ──
         col_btns = ft.Row([
             ft.IconButton(
                 icon=ft.icons.REFRESH,
@@ -592,19 +548,132 @@ def main(page: ft.Page):
             ),
         ], spacing=0, tight=True)
 
-        return ft.Container(
-            content=ft.Row([
+        if landscape:
+            # ══ ГОРИЗОНТАЛЬНЫЙ РЕЖИМ ══
+            # IP | Комментарий | Статус | Пинг | Кнопки
+            row_content = ft.Row([
                 mark_bar,
-                col_ip,
-                col_comment,
-                col_status,
-                col_ping,
+                ft.Container(
+                    content=ft.Text(
+                        device.ip,
+                        size=13,
+                        weight=ft.FontWeight.W_600,
+                        color=ft.colors.CYAN_200,
+                        no_wrap=True,
+                    ),
+                    width=130,
+                ),
+                ft.Container(
+                    content=ft.Text(
+                        device.comment or "—",
+                        size=12,
+                        color=ft.colors.WHITE,
+                        no_wrap=True,
+                        overflow=
+                        ft.TextOverflow.ELLIPSIS,
+                    ),
+                    expand=True,
+                ),
+                ft.Container(
+                    content=ft.Column([
+                        ft.Text(
+                            stx,
+                            size=12,
+                            color=sc,
+                            weight=
+                            ft.FontWeight.BOLD,
+                            no_wrap=True,
+                        ),
+                        ft.Text(
+                            device.last_check or "",
+                            size=9,
+                            color=
+                            ft.colors.GREY_600,
+                            no_wrap=True,
+                        ),
+                    ], spacing=0),
+                    width=90,
+                ),
+                ft.Container(
+                    content=ft.Text(
+                        ping_txt,
+                        size=12,
+                        color=ping_clr,
+                        no_wrap=True,
+                    ),
+                    width=55,
+                ),
                 col_btns,
-            ], spacing=2,
+            ], spacing=4,
                vertical_alignment=
-               ft.CrossAxisAlignment.CENTER),
+               ft.CrossAxisAlignment.CENTER)
+            row_height = 46
+
+        else:
+            # ══ ВЕРТИКАЛЬНЫЙ РЕЖИМ ══
+            # Строка 1: IP | Статус | Пинг | Кнопки
+            # Строка 2: Комментарий (серый)
+            row_content = ft.Column([
+                ft.Row([
+                    mark_bar,
+                    ft.Container(
+                        content=ft.Text(
+                            device.ip,
+                            size=13,
+                            weight=
+                            ft.FontWeight.W_600,
+                            color=
+                            ft.colors.CYAN_200,
+                            no_wrap=True,
+                        ),
+                        width=118,
+                    ),
+                    ft.Container(expand=True),
+                    ft.Container(
+                        content=ft.Text(
+                            stx,
+                            size=11,
+                            color=sc,
+                            weight=
+                            ft.FontWeight.BOLD,
+                            no_wrap=True,
+                        ),
+                        width=62,
+                    ),
+                    ft.Container(
+                        content=ft.Text(
+                            ping_txt,
+                            size=11,
+                            color=ping_clr,
+                            no_wrap=True,
+                        ),
+                        width=46,
+                    ),
+                    col_btns,
+                ], spacing=2,
+                   vertical_alignment=
+                   ft.CrossAxisAlignment.CENTER),
+                ft.Row([
+                    ft.Container(width=6),
+                    ft.Text(
+                        device.comment or "",
+                        size=11,
+                        color=ft.colors.GREY_400,
+                        no_wrap=True,
+                        overflow=
+                        ft.TextOverflow.ELLIPSIS,
+                        italic=True,
+                    ),
+                ]) if device.comment else ft.Container(
+                    height=2),
+            ], spacing=0)
+            row_height = (
+                58 if device.comment else 44)
+
+        return ft.Container(
+            content=row_content,
             bgcolor=bg,
-            height=50,
+            height=row_height,
             padding=ft.padding.symmetric(
                 horizontal=2, vertical=2),
             border=ft.border.only(
@@ -713,38 +782,78 @@ def main(page: ft.Page):
         )
 
     def rebuild_col_header():
-        col_header_row.controls = [
-            ft.Container(width=4),
-            _hdr_btn("IP адрес",
-                     SORT_IP, width=108),
-            _hdr_btn("Комментарий",
-                     SORT_COMMENT, expand=True),
-            _hdr_btn("Статус",
-                     SORT_STATUS, width=72),
-            _hdr_btn("Пинг",
-                     SORT_PING, width=46),
-            ft.Container(
-                content=ft.IconButton(
-                    icon=ft.icons.SORT,
-                    icon_color=(
-                        ft.colors.CYAN_400
-                        if state["sort_col"]
-                        else ft.colors.GREY_700),
-                    icon_size=14,
-                    tooltip="Сбросить сортировку",
-                    on_click=lambda e:
-                        reset_sort(),
-                    padding=ft.padding.all(0),
+        landscape = is_landscape()
+        if landscape:
+            col_header_row.controls = [
+                ft.Container(width=4),
+                _hdr_btn("IP адрес",
+                         SORT_IP, width=130),
+                _hdr_btn("Комментарий",
+                         SORT_COMMENT,
+                         expand=True),
+                _hdr_btn("Статус",
+                         SORT_STATUS, width=90),
+                _hdr_btn("Пинг",
+                         SORT_PING, width=55),
+                ft.Container(
+                    content=ft.IconButton(
+                        icon=ft.icons.SORT,
+                        icon_color=(
+                            ft.colors.CYAN_400
+                            if state["sort_col"]
+                            else
+                            ft.colors.GREY_700),
+                        icon_size=14,
+                        tooltip="Сбросить",
+                        on_click=lambda e:
+                            reset_sort(),
+                        padding=
+                        ft.padding.all(0),
+                    ),
+                    width=100,
                 ),
-                width=90,
-            ),
-        ]
+            ]
+        else:
+            col_header_row.controls = [
+                ft.Container(width=4),
+                _hdr_btn("IP адрес  /  Комментарий",
+                         SORT_IP, width=140),
+                ft.Container(expand=True),
+                _hdr_btn("Статус",
+                         SORT_STATUS, width=62),
+                _hdr_btn("Пинг",
+                         SORT_PING, width=46),
+                ft.Container(
+                    content=ft.IconButton(
+                        icon=ft.icons.SORT,
+                        icon_color=(
+                            ft.colors.CYAN_400
+                            if state["sort_col"]
+                            else
+                            ft.colors.GREY_700),
+                        icon_size=14,
+                        tooltip="Сбросить",
+                        on_click=lambda e:
+                            reset_sort(),
+                        padding=
+                        ft.padding.all(0),
+                    ),
+                    width=100,
+                ),
+            ]
         try:
             page.update()
         except Exception:
             pass
 
     rebuild_col_header()
+
+    # ── обработчик поворота ───────────────────
+    def on_resize(e):
+        rebuild_col_header()
+        refresh_devices()
+
+    page.on_resize = on_resize
 
     # ── пинг ──────────────────────────────────
     def _ping_one(device: Device):
@@ -808,10 +917,12 @@ def main(page: ft.Page):
             for t in threads:
                 t.join()
 
-            on  = sum(1 for d in devices
-                      if d.status == STATUS_ONLINE)
-            off = sum(1 for d in devices
-                      if d.status == STATUS_OFFLINE)
+            on  = sum(
+                1 for d in devices
+                if d.status == STATUS_ONLINE)
+            off = sum(
+                1 for d in devices
+                if d.status == STATUS_OFFLINE)
             state["pinging"] = False
             btn_ping.text    = "▶ ПИНГ"
             btn_ping.bgcolor = ft.colors.GREEN_900
@@ -824,11 +935,6 @@ def main(page: ft.Page):
             target=_do, daemon=True).start()
 
     # ── таймер ────────────────────────────────
-    lbl_timer = ft.Text(
-        "", size=11,
-        color=ft.colors.CYAN_400,
-    )
-
     def _stop_timer():
         state["stop_timer"].set()
         lbl_timer.value = ""
@@ -880,7 +986,7 @@ def main(page: ft.Page):
     dd_timer = ft.Dropdown(
         hint_text="Авто",
         width=85,
-        height=38,
+        height=36,
         text_size=11,
         bgcolor=ft.colors.GREY_900,
         border_color=ft.colors.GREY_700,
@@ -893,38 +999,35 @@ def main(page: ft.Page):
     )
 
     toolbar = ft.Container(
-        content=ft.Column([
-            ft.Row([
-                btn_ping,
-                ft.ElevatedButton(
-                    text="+ Добавить",
-                    bgcolor=ft.colors.BLUE_900,
-                    color=ft.colors.WHITE,
-                    on_click=lambda e:
-                        open_edit_dlg(-1),
-                ),
-                ft.Container(expand=True),
-                ft.IconButton(
-                    icon=ft.icons.SAVE,
-                    icon_color=ft.colors.AMBER_400,
-                    tooltip="Сохранить",
-                    on_click=lambda e:
-                        quick_save(),
-                ),
-            ], spacing=6),
-            ft.Row([
-                ft.Text(
-                    "Авто:", size=11,
-                    color=ft.colors.GREY_500),
-                dd_timer,
-                lbl_timer,
-            ], spacing=4),
-        ], spacing=4),
+        content=ft.Row([
+            btn_ping,
+            ft.ElevatedButton(
+                text="+ Добавить",
+                bgcolor=ft.colors.BLUE_900,
+                color=ft.colors.WHITE,
+                on_click=lambda e:
+                    open_edit_dlg(-1),
+            ),
+            ft.Text(
+                "Авто:", size=11,
+                color=ft.colors.GREY_500),
+            dd_timer,
+            lbl_timer,
+            ft.Container(expand=True),
+            ft.IconButton(
+                icon=ft.icons.SAVE,
+                icon_color=ft.colors.AMBER_400,
+                tooltip="Сохранить",
+                on_click=lambda e:
+                    quick_save(),
+            ),
+        ], spacing=6),
         padding=ft.padding.symmetric(
             horizontal=8, vertical=6),
         bgcolor=HEADER_BG,
         border=ft.border.only(
-            bottom=ft.BorderSide(1, "#2a2a3a")),
+            bottom=ft.BorderSide(
+                1, "#2a2a3a")),
     )
 
     def quick_save():
@@ -932,7 +1035,8 @@ def main(page: ft.Page):
             open_save_dlg()
             return
         try:
-            save_project(proj(), proj().filepath)
+            save_project(
+                proj(), proj().filepath)
             lbl_status.value = "✓ Сохранено"
             page.update()
         except Exception as ex:
@@ -1159,7 +1263,8 @@ def main(page: ft.Page):
                             refresh_devices()
                             _switch_tab(0)
                             lbl_status.value = (
-                                f"✓ Открыт: {p.name}")
+                                f"✓ Открыт:"
+                                f" {p.name}")
                             page.update()
                         except Exception as ex:
                             lbl_status.value = (
@@ -1180,41 +1285,48 @@ def main(page: ft.Page):
                     content=ft.Row([
                         ft.Icon(
                             ft.icons.FOLDER,
-                            color=ft.colors.AMBER_400,
+                            color=
+                            ft.colors.AMBER_400,
                             size=26,
                         ),
                         ft.Column([
                             ft.Text(
                                 pname,
                                 size=13,
-                                color=ft.colors.WHITE,
+                                color=
+                                ft.colors.WHITE,
                                 weight=
                                 ft.FontWeight.W_500,
                                 no_wrap=True,
                                 overflow=
-                                ft.TextOverflow.ELLIPSIS,
+                                ft.TextOverflow
+                                .ELLIPSIS,
                             ),
                             ft.Text(
                                 (f"{pdesc}  •  "
-                                 if pdesc else "") +
+                                 if pdesc
+                                 else "") +
                                 f"{ndev} устройств",
                                 size=11,
                                 color=
                                 ft.colors.GREY_500,
                                 no_wrap=True,
                                 overflow=
-                                ft.TextOverflow.ELLIPSIS,
+                                ft.TextOverflow
+                                .ELLIPSIS,
                             ),
                         ], spacing=2, expand=True),
                         ft.IconButton(
-                            icon=ft.icons.OPEN_IN_NEW,
+                            icon=
+                            ft.icons.OPEN_IN_NEW,
                             icon_color=
                             ft.colors.BLUE_300,
                             tooltip="Открыть",
                             on_click=_load(),
                         ),
                         ft.IconButton(
-                            icon=ft.icons.DELETE_OUTLINE,
+                            icon=
+                            ft.icons.DELETE_OUTLINE,
                             icon_color=
                             ft.colors.RED_300,
                             tooltip="Удалить",
@@ -1372,15 +1484,18 @@ def main(page: ft.Page):
                     expand=True,
                 ),
                 ft.IconButton(
-                    icon=ft.icons.CREATE_NEW_FOLDER,
-                    icon_color=ft.colors.GREEN_400,
+                    icon=
+                    ft.icons.CREATE_NEW_FOLDER,
+                    icon_color=
+                    ft.colors.GREEN_400,
                     tooltip="Новый проект",
                     on_click=lambda e:
                         open_new_dlg(),
                 ),
                 ft.IconButton(
                     icon=ft.icons.SAVE,
-                    icon_color=ft.colors.AMBER_400,
+                    icon_color=
+                    ft.colors.AMBER_400,
                     tooltip="Сохранить текущий",
                     on_click=lambda e:
                         open_save_dlg(),
@@ -1451,11 +1566,11 @@ def main(page: ft.Page):
                 ft.Icon(
                     ft.icons.WIFI_TETHERING,
                     color=ft.colors.BLUE_300,
-                    size=20,
+                    size=18,
                 ),
                 ft.Text(
                     "Ping Camera",
-                    size=16,
+                    size=15,
                     weight=ft.FontWeight.BOLD,
                     color=ft.colors.CYAN_200,
                 ),
@@ -1466,14 +1581,14 @@ def main(page: ft.Page):
                 lbl_online,
                 lbl_offline,
                 lbl_total,
-                ft.Container(expand=True),
             ], spacing=10),
         ], spacing=2),
         bgcolor=HEADER_BG,
         padding=ft.padding.symmetric(
-            horizontal=10, vertical=6),
+            horizontal=10, vertical=5),
         border=ft.border.only(
-            bottom=ft.BorderSide(1, "#2a2a3a")),
+            bottom=ft.BorderSide(
+                1, "#2a2a3a")),
     )
 
     status_bar = ft.Container(
